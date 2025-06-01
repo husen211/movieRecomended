@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Movie Recommender</title>
+    <style>
+      :root {
+        --bg-dark: #121212;
+        --bg-light: #f4f4f4;
+        --text-dark: #ffffff;
+        --text-light: #1c1c1c;
+        --card-dark: #1e1e1e;
+        --card-light: #ffffff;
+        --highlight: #03dac6;
+        --muted: #cccccc;
+      }
+
+      [data-theme="dark"] {
+        background-color: var(--bg-dark);
+        color: var(--text-dark);
+      }
+
+      [data-theme="light"] {
+        background-color: var(--bg-light);
+        color: var(--text-light);
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      form {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      input[type="text"] {
+        padding: 10px;
+        width: 60%;
+        max-width: 400px;
+        border: none;
+        border-radius: 8px;
+        background-color: #333;
+        color: #fff;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        background-color: var(--highlight);
+        color: #000;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .toggle-theme {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        background: none;
+        color: var(--highlight);
+        border: 1px solid var(--highlight);
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .matched-title,
+      .error {
+        text-align: center;
+        margin: 10px 0;
+      }
+
+      .error {
+        color: #ff6b6b;
+      }
+
+      .movies {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .movie-card {
+        background-color: var(--card-dark);
+        border-radius: 12px;
+        padding: 15px;
+        width: 240px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease;
+      }
+
+      [data-theme="light"] .movie-card {
+        background-color: var(--card-light);
+      }
+
+      .movie-card:hover {
+        transform: scale(1.03);
+      }
+
+      .movie-card img {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      .movie-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .score {
+        color: var(--highlight);
+        font-size: 0.9em;
+      }
+
+      .overview {
+        margin-top: 10px;
+        font-size: 0.85em;
+        color: var(--muted);
+      }
+
+      .trailer-button {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 6px 12px;
+        background-color: #ff5252;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85em;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .trailer-button:hover {
+        background-color: #e84141;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="toggle-theme" onclick="toggleTheme()">Toggle Theme</button>
+
+    <h1>🎬 Movie Recommender</h1>
+
+    <form action="/recommend" method="get">
+      <input
+        type="text"
+        name="title"
+        placeholder="Masukkan judul film..."
+        required
+      />
+      <button type="submit">Cari</button>
+    </form>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %} {% if matched_title %}
+    <div class="matched-title">
+      Hasil berdasarkan: <strong>{{ matched_title }}</strong>
+    </div>
+    {% endif %} {% if recommendations %}
+    <div class="movies">
+      {% for movie in recommendations %}
+      <div class="movie-card">
+        {% if movie.poster_url %}
+        <img src="{{ movie.poster_url }}" alt="Poster" />
+        {% else %}
+        <img
+          src="https://via.placeholder.com/240x360?text=No+Image"
+          alt="No poster available"
+        />
+        {% endif %}
+        <div class="movie-title">{{ movie.title }}</div>
+        <div class="score">Kemiripan: {{ movie.score }}%</div>
+        <div class="overview">{{ movie.overview }}</div>
+        <a
+          target="_blank"
+          href="https://www.youtube.com/results?search_query={{ movie.title | urlencode }} trailer"
+          class="trailer-button"
+          >🎬 Watch Trailer</a
+        >
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute("data-theme");
+        html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+      }
+    </script>
+  </body>
+</html>
