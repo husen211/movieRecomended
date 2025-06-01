@@ -1,0 +1,8 @@
+Flask
+sentence-transformers
+scikit-learn
+pandas
+joblib
+rapidfuzz
+torch
+transformers
